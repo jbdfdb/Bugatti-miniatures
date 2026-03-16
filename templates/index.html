@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Bugatti de Pascal — Collection de Miniatures</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="main-nav" class="nav">
+        <div class="nav-brand">
+            <span class="nav-logo">EB</span>
+            <span class="nav-title">Les Bugatti de Pascal</span>
+        </div>
+        <div class="nav-links">
+            <a href="#collection" data-nav>Collection</a>
+            <a href="#statistiques" data-nav>Statistiques</a>
+            <a href="#timeline" data-nav>Chronologie</a>
+            <a href="#fabricants" data-nav>Fabricants</a>
+            <a href="#types" data-nav>Types</a>
+        </div>
+        <div class="nav-search-mini">
+            <input type="text" id="nav-search" placeholder="Rechercher..." autocomplete="off">
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Collection Privée</div>
+            <h1 class="hero-title">
+                <span class="hero-title-line">Les Bugatti</span>
+                <span class="hero-title-line hero-title-accent">de Pascal</span>
+            </h1>
+            <p class="hero-subtitle">La plus exhaustive base de données de miniatures Bugatti au monde</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number" data-count="3941">0</span>
+                    <span class="hero-stat-label">Miniatures</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number" data-count="392">0</span>
+                    <span class="hero-stat-label">Fabricants</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number" data-count="65">0</span>
+                    <span class="hero-stat-label">Types Bugatti</span>
+                </div>
+            </div>
+            <a href="#collection" class="hero-cta">
+                <span>Explorer la Collection</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+            </a>
+        </div>
+        <div class="hero-scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span>Défiler</span>
+        </div>
+    </section>
+
+    <!-- Collection Section -->
+    <section id="collection" class="section">
+        <div class="section-header">
+            <h2 class="section-title">La Collection</h2>
+            <p class="section-subtitle">Explorez chaque miniature dans ses moindres détails</p>
+        </div>
+
+        <!-- Search & Filters Bar -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" id="search-input" placeholder="Rechercher par fabricant, type, modèle, couleur..." autocomplete="off">
+                <span id="search-count" class="search-count"></span>
+            </div>
+            <div class="filter-chips">
+                <div class="filter-group">
+                    <label>Échelle</label>
+                    <div class="chip-set" id="filter-echelle">
+                        <button class="chip active" data-value="all">Toutes</button>
+                        <button class="chip" data-value="1/43">1/43</button>
+                        <button class="chip" data-value="1/87">1/87</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Matériau</label>
+                    <div class="chip-set" id="filter-material">
+                        <button class="chip active" data-value="all">Tous</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Marque</label>
+                    <select id="filter-marque" class="filter-select">
+                        <option value="all">Toutes</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Type Bugatti</label>
+                    <select id="filter-type" class="filter-select">
+                        <option value="all">Tous</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Fabricant</label>
+                    <select id="filter-fabricant" class="filter-select">
+                        <option value="all">Tous</option>
+                    </select>
+                </div>
+                <button id="reset-filters" class="btn-reset" title="Réinitialiser les filtres">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
+            </div>
+            <div class="view-toggles">
+                <button class="view-btn active" data-view="grid" title="Vue grille">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                </button>
+                <button class="view-btn" data-view="table" title="Vue tableau">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M3 3h18v18H3z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Grid View -->
+        <div id="collection-grid" class="collection-grid"></div>
+
+        <!-- Table View -->
+        <div id="collection-table" class="collection-table hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-sort="fabricant">Fabricant <span class="sort-arrow"></span></th>
+                        <th data-sort="ref">Réf.</th>
+                        <th data-sort="type_bugatti">Type <span class="sort-arrow"></span></th>
+                        <th data-sort="modele">Modèle</th>
+                        <th data-sort="annee">Année</th>
+                        <th data-sort="couleur">Couleur</th>
+                        <th data-sort="echelle">Échelle</th>
+                        <th data-sort="type_miniature">Matériau</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="statistiques" class="section section-dark">
+        <div class="section-header">
+            <h2 class="section-title">Statistiques</h2>
+            <p class="section-subtitle">La collection en chiffres</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card stat-card-large">
+                <h3>Répartition par Type Bugatti</h3>
+                <div class="chart-container">
+                    <canvas id="chart-types"></canvas>
+                </div>
+            </div>
+            <div class="stat-card">
+                <h3>Matériaux</h3>
+                <div class="chart-container">
+                    <canvas id="chart-materials"></canvas>
+                </div>
+            </div>
+            <div class="stat-card">
+                <h3>Top 15 Fabricants</h3>
+                <div class="chart-container">
+                    <canvas id="chart-fabricants"></canvas>
+                </div>
+            </div>
+            <div class="stat-card stat-card-full">
+                <h3>Production par Décennie</h3>
+                <div class="chart-container chart-wide">
+                    <canvas id="chart-decades"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Chronologie</h2>
+            <p class="section-subtitle">Les miniatures à travers les époques automobiles Bugatti</p>
+        </div>
+        <div class="timeline-container">
+            <div class="timeline-track" id="timeline-track"></div>
+        </div>
+    </section>
+
+    <!-- Fabricants Section -->
+    <section id="fabricants" class="section section-dark">
+        <div class="section-header">
+            <h2 class="section-title">Les Fabricants</h2>
+            <p class="section-subtitle">392 artisans et industriels du monde entier</p>
+        </div>
+        <div class="fabricants-search">
+            <input type="text" id="fab-search" placeholder="Filtrer les fabricants...">
+        </div>
+        <div id="fabricants-grid" class="fabricants-grid"></div>
+    </section>
+
+    <!-- Types Explorer Section -->
+    <section id="types" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Types Bugatti</h2>
+            <p class="section-subtitle">De la Type 13 à la Chiron — toute la lignée en miniature</p>
+        </div>
+        <div id="types-treemap" class="types-treemap"></div>
+    </section>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="nav-logo">EB</span>
+                <div>
+                    <strong>Les Bugatti de Pascal</strong>
+                    <p>Base de données de miniatures Bugatti</p>
+                </div>
+            </div>
+            <div class="footer-info">
+                <p>3 941 miniatures référencées &middot; 392 fabricants &middot; 65 types Bugatti</p>
+                <p class="footer-credit">Données compilées avec passion par Pascal &middot; Site réalisé par J-B de Fromont</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
