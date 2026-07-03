@@ -19,8 +19,9 @@ bugatti update       # git pull + refresh deps
 bugatti backup       # tar collection + content + photos into data/backups/
 bugatti reset-admin  # wipe local admin password
 
-# Dev equivalent without the alias
-.venv/bin/python -m uvicorn app:app --reload
+# Dev equivalent without the alias (--no-proxy-headers so X-Forwarded-For
+# can't be spoofed; add BUGATTI_TRUST_PROXY handling only behind a real proxy)
+.venv/bin/python -m uvicorn app:app --reload --no-proxy-headers
 ```
 
 No tests or linter are configured. There is no build step (Chart.js and the web fonts are vendored under `static/`). Owner maintenance is documented in **FICHE-MAINTENANCE.md**; the in-app admin guide lives in the "Guide" tab (rendered by `renderGuide()` in `static/js/admin.js`).
