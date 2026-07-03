@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 .venv/
@@ -5,3 +6,13 @@ __pycache__/
 dist/
 build/
 .DS_Store
+
+# Secrets & données locales de l'instance (JAMAIS versionnés — repo public)
+instance/
+
+# Sauvegardes locales
+data/backups/
+
+# Photos uploadées par l'administrateur (restent sur sa machine)
+static/img/uploads/
+static/img/photos_index.json

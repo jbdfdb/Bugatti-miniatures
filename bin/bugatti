@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════
+#  bugatti — lanceur du site « Les Bugatti de Pascal »
+#  Usage : bugatti [run|stop|update|backup|restore|reset-admin|status|help]
+# ═══════════════════════════════════════════════════════════════════
+set -euo pipefail
+
+# Racine du dépôt (résout un éventuel lien symbolique vers ce script)
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+REPO="$(cd -P "$(dirname "$SOURCE")/.." && pwd)"
+cd "$REPO"
+
+PORT="${BUGATTI_PORT:-8000}"
+PYTHON="$REPO/.venv/bin/python"
+PIDFILE="$REPO/instance/server.pid"
+
+c_gold="\033[38;5;179m"; c_blue="\033[38;5;33m"; c_dim="\033[2m"; c_off="\033[0m"
+say()  { echo -e "${c_gold}🏎️  $*${c_off}"; }
+info() { echo -e "${c_dim}$*${c_off}"; }
+die()  { echo -e "\033[31m✖ $*${c_off}" >&2; exit 1; }
+
+ensure_env() {
+    if [ ! -x "$PYTHON" ]; then
+        die "Environnement Python absent. Lancez d'abord :  ./install.sh"
+    fi
+}
+
+is_running() {
+    [ -f "$PIDFILE" ] || return 1
+    local pid; pid="$(cat "$PIDFILE" 2>/dev/null)"
+    [ -n "$pid" ] || return 1
+    # Le PID doit être vivant ET être bien NOTRE serveur (évite de tuer un
+    # process quelconque qui aurait recyclé un PID d'un fichier obsolète).
+    kill -0 "$pid" 2>/dev/null && ps -p "$pid" -o command= 2>/dev/null | grep -q "uvicorn app:app"
+}
+
+cmd_run() {
+    ensure_env
+    if is_running; then
+        say "Le site tourne déjà → http://localhost:$PORT"
+        open "http://localhost:$PORT" 2>/dev/null || true
+        exit 0
+    fi
+    mkdir -p "$REPO/instance"
+    say "Démarrage du site sur http://localhost:$PORT"
+    info "(Laissez cette fenêtre ouverte. Ctrl+C pour arrêter.)"
+    # Ouvre le navigateur une fois le serveur prêt
+    ( for _ in $(seq 1 40); do
+        if curl -s "http://localhost:$PORT/api/session" >/dev/null 2>&1; then
+            open "http://localhost:$PORT" 2>/dev/null || true; break
+        fi; sleep 0.25
+      done ) &
+    echo $$ > "$PIDFILE"
+    trap 'rm -f "$PIDFILE"' EXIT
+    # Par défaut on n'accorde AUCUNE confiance à X-Forwarded-For (sinon un
+    # client pourrait usurper son IP et contourner l'anti-force-brute). Si le
+    # site tourne un jour derrière un reverse-proxy de confiance, lancer avec
+    # BUGATTI_TRUST_PROXY=1.
+    local proxy_flags="--no-proxy-headers"
+    [ "${BUGATTI_TRUST_PROXY:-}" = "1" ] && proxy_flags="--proxy-headers --forwarded-allow-ips=*"
+    # shellcheck disable=SC2086
+    exec "$PYTHON" -m uvicorn app:app --host 127.0.0.1 --port "$PORT" $proxy_flags --log-level warning
+}
+
+cmd_stop() {
+    if is_running; then
+        kill "$(cat "$PIDFILE")" && rm -f "$PIDFILE"
+        say "Site arrêté."
+    else
+        info "Aucun site en cours d'exécution."
+    fi
+}
+
+cmd_status() {
+    if is_running; then say "En marche → http://localhost:$PORT (pid $(cat "$PIDFILE"))"
+    else info "Arrêté."; fi
+}
+
+cmd_update() {
+    say "Mise à jour depuis GitHub…"
+    git pull origin main || die "Échec du git pull (modifications locales ? voir FICHE-MAINTENANCE.md)"
+    say "Mise à jour des dépendances…"
+    if command -v poetry >/dev/null 2>&1; then
+        poetry install --no-root --quiet || poetry install --quiet || true
+    else
+        "$PYTHON" -m pip install --quiet --upgrade -r <("$PYTHON" - <<'PY'
+import tomllib, sys
+d = tomllib.load(open("pyproject.toml","rb"))
+for dep in d["project"]["dependencies"]:
+    print(dep.split(" ")[0].split(">")[0].split("<")[0].split("=")[0].strip())
+PY
+) || true
+    fi
+    say "À jour ! Relancez avec :  bugatti run"
+}
+
+cmd_backup() {
+    mkdir -p "$REPO/data/backups"
+    STAMP="$(date +%Y%m%d-%H%M%S)"
+    ARCHIVE="$REPO/data/backups/sauvegarde-$STAMP.tar.gz"
+    # On ne sauvegarde que les fichiers réellement présents (pas de faux
+    # avertissements tar), et on VÉRIFIE que tar a réussi avant d'annoncer OK.
+    local items=()
+    for f in data/collection.json data/site_content.json config/analytics_exclude.json \
+             static/img/uploads static/img/photos_index.json; do
+        [ -e "$REPO/$f" ] && items+=("$f")
+    done
+    [ ${#items[@]} -gt 0 ] || die "Rien à sauvegarder (données introuvables)."
+    if tar -czf "$ARCHIVE" -C "$REPO" "${items[@]}"; then
+        say "Sauvegarde créée : $ARCHIVE"
+        info "Copiez-la sur une clé USB ou un cloud pour plus de sécurité."
+    else
+        rm -f "$ARCHIVE"
+        die "Échec de la sauvegarde — rien n'a été écrit."
+    fi
+}
+
+cmd_restore() {
+    local archive="${1:-}"
+    [ -z "$archive" ] && {
+        say "Sauvegardes disponibles :"
+        ls -1t "$REPO/data/backups/"*.tar.gz 2>/dev/null || info "  (aucune)"
+        info "Usage : bugatti restore data/backups/sauvegarde-AAAAMMJJ-HHMMSS.tar.gz"
+        exit 0
+    }
+    [ -f "$archive" ] || die "Fichier introuvable : $archive"
+    read -r -p "Restaurer $archive et écraser les données actuelles ? [o/N] " ok
+    [[ "$ok" =~ ^[oO]$ ]] || { info "Annulé."; exit 0; }
+    tar -xzf "$archive" -C "$REPO"
+    say "Restauration terminée."
+}
+
+cmd_reset_admin() {
+    read -r -p "Effacer le mot de passe admin (il devra être recréé) ? [o/N] " ok
+    [[ "$ok" =~ ^[oO]$ ]] || { info "Annulé."; exit 0; }
+    rm -f "$REPO/instance/admin_secret.json"
+    say "Mot de passe admin effacé. Au prochain lancement, cliquez « Admin » pour en créer un nouveau."
+}
+
+cmd_help() {
+    cat <<EOF
+🏎️  bugatti — Les Bugatti de Pascal
+
+  bugatti run           Lance le site et ouvre le navigateur
+  bugatti stop          Arrête le site
+  bugatti status        Indique si le site tourne
+  bugatti update        Récupère les mises à jour (git pull + dépendances)
+  bugatti backup        Sauvegarde la collection, les textes et les photos
+  bugatti restore [f]   Restaure une sauvegarde
+  bugatti reset-admin   Efface le mot de passe administrateur
+  bugatti help          Affiche cette aide
+
+Site : http://localhost:$PORT   ·   Maintenance : voir FICHE-MAINTENANCE.md
+EOF
+}
+
+case "${1:-run}" in
+    run)          cmd_run ;;
+    stop)         cmd_stop ;;
+    status)       cmd_status ;;
+    update)       cmd_update ;;
+    backup)       cmd_backup ;;
+    restore)      cmd_restore "${2:-}" ;;
+    reset-admin)  cmd_reset_admin ;;
+    help|-h|--help) cmd_help ;;
+    *)            die "Commande inconnue : $1  (essayez : bugatti help)" ;;
+esac

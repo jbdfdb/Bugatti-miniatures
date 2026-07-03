@@ -1,0 +1,7 @@
+{
+  "ips": [
+    "127.0.0.1",
+    "::1"
+  ],
+  "comment": "IP à exclure du dashboard de fréquentation (celle de Pascal, celle de J-B, localhost)."
+}

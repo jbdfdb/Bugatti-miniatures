@@ -1,0 +1,4 @@
+{
+  "reset_id": 0,
+  "comment": "Incrémente reset_id et pousse sur GitHub pour forcer la recréation du mot de passe admin au prochain lancement."
+}

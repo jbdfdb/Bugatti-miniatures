@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Les Bugatti de Pascal — Collection de Miniatures</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/fonts/fonts.css">
+    <link rel="stylesheet" href="/static/css/style.css?v={{ v }}">
+    <link rel="stylesheet" href="/static/css/admin.css?v={{ v }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>">
 </head>
 <body>
     <!-- Navigation -->
     <nav id="main-nav" class="nav">
         <div class="nav-brand">
-            <span class="nav-logo">EB</span>
-            <span class="nav-title">Les Bugatti de Pascal</span>
+            <span class="nav-logo" data-content="nav_logo">EB</span>
+            <span class="nav-title" data-content="nav_title">Les Bugatti de Pascal</span>
         </div>
         <div class="nav-links">
             <a href="#collection" data-nav>Collection</a>
@@ -33,37 +33,35 @@
         <canvas id="hero-canvas"></canvas>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <div class="hero-badge">Collection Privée</div>
+            <div class="hero-badge" data-content="hero_badge">Collection Privée</div>
             <h1 class="hero-title">
-                <span class="hero-title-line">Les Bugatti</span>
-                <span class="hero-title-line hero-title-accent">de Pascal</span>
+                <span class="hero-title-line" data-content="hero_title_1">Les Bugatti</span>
+                <span class="hero-title-line hero-title-accent" data-content="hero_title_2">de Pascal</span>
             </h1>
-            <p class="hero-subtitle">La plus exhaustive base de données de miniatures Bugatti au monde</p>
+            <p class="hero-subtitle" data-content="hero_subtitle">La plus exhaustive base de données de miniatures Bugatti au monde</p>
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <span class="hero-stat-number" data-count="3941">0</span>
+                    <span class="hero-stat-number" data-count="0" id="hero-count-total">0</span>
                     <span class="hero-stat-label">Miniatures</span>
                 </div>
                 <div class="hero-stat-divider"></div>
                 <div class="hero-stat">
-                    <span class="hero-stat-number" data-count="392">0</span>
+                    <span class="hero-stat-number" data-count="0" id="hero-count-fab">0</span>
                     <span class="hero-stat-label">Fabricants</span>
                 </div>
                 <div class="hero-stat-divider"></div>
                 <div class="hero-stat">
-                    <span class="hero-stat-number" data-count="65">0</span>
+                    <span class="hero-stat-number" data-count="0" id="hero-count-types">0</span>
                     <span class="hero-stat-label">Types Bugatti</span>
                 </div>
             </div>
             <a href="#collection" class="hero-cta">
-                <span>Explorer la Collection</span>
+                <span data-content="hero_cta">Explorer la Collection</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
             </a>
         </div>
         <div class="hero-scroll-indicator">
-            <div class="mouse">
-                <div class="wheel"></div>
-            </div>
+            <div class="mouse"><div class="wheel"></div></div>
             <span>Défiler</span>
         </div>
     </section>
@@ -71,11 +69,10 @@
     <!-- Collection Section -->
     <section id="collection" class="section">
         <div class="section-header">
-            <h2 class="section-title">La Collection</h2>
-            <p class="section-subtitle">Explorez chaque miniature dans ses moindres détails</p>
+            <h2 class="section-title" data-content="collection_title">La Collection</h2>
+            <p class="section-subtitle" data-content="collection_subtitle">Explorez chaque miniature dans ses moindres détails</p>
         </div>
 
-        <!-- Search & Filters Bar -->
         <div class="filters-bar">
             <div class="search-box">
                 <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -99,21 +96,15 @@
                 </div>
                 <div class="filter-group">
                     <label>Marque</label>
-                    <select id="filter-marque" class="filter-select">
-                        <option value="all">Toutes</option>
-                    </select>
+                    <select id="filter-marque" class="filter-select"><option value="all">Toutes</option></select>
                 </div>
                 <div class="filter-group">
                     <label>Type Bugatti</label>
-                    <select id="filter-type" class="filter-select">
-                        <option value="all">Tous</option>
-                    </select>
+                    <select id="filter-type" class="filter-select"><option value="all">Tous</option></select>
                 </div>
                 <div class="filter-group">
                     <label>Fabricant</label>
-                    <select id="filter-fabricant" class="filter-select">
-                        <option value="all">Tous</option>
-                    </select>
+                    <select id="filter-fabricant" class="filter-select"><option value="all">Tous</option></select>
                 </div>
                 <button id="reset-filters" class="btn-reset" title="Réinitialiser les filtres">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -129,10 +120,7 @@
             </div>
         </div>
 
-        <!-- Grid View -->
         <div id="collection-grid" class="collection-grid"></div>
-
-        <!-- Table View -->
         <div id="collection-table" class="collection-table hidden">
             <table>
                 <thead>
@@ -150,41 +138,31 @@
                 <tbody id="table-body"></tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
         <div class="pagination" id="pagination"></div>
     </section>
 
     <!-- Statistics Section -->
     <section id="statistiques" class="section section-dark">
         <div class="section-header">
-            <h2 class="section-title">Statistiques</h2>
-            <p class="section-subtitle">La collection en chiffres</p>
+            <h2 class="section-title" data-content="stats_title">Statistiques</h2>
+            <p class="section-subtitle" data-content="stats_subtitle">La collection en chiffres</p>
         </div>
         <div class="stats-grid">
             <div class="stat-card stat-card-large">
                 <h3>Répartition par Type Bugatti</h3>
-                <div class="chart-container">
-                    <canvas id="chart-types"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="chart-types"></canvas></div>
             </div>
             <div class="stat-card">
                 <h3>Matériaux</h3>
-                <div class="chart-container">
-                    <canvas id="chart-materials"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="chart-materials"></canvas></div>
             </div>
             <div class="stat-card">
                 <h3>Top 15 Fabricants</h3>
-                <div class="chart-container">
-                    <canvas id="chart-fabricants"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="chart-fabricants"></canvas></div>
             </div>
             <div class="stat-card stat-card-full">
                 <h3>Production par Décennie</h3>
-                <div class="chart-container chart-wide">
-                    <canvas id="chart-decades"></canvas>
-                </div>
+                <div class="chart-container chart-wide"><canvas id="chart-decades"></canvas></div>
             </div>
         </div>
     </section>
@@ -192,19 +170,17 @@
     <!-- Timeline Section -->
     <section id="timeline" class="section">
         <div class="section-header">
-            <h2 class="section-title">Chronologie</h2>
-            <p class="section-subtitle">Les miniatures à travers les époques automobiles Bugatti</p>
+            <h2 class="section-title" data-content="timeline_title">Chronologie</h2>
+            <p class="section-subtitle" data-content="timeline_subtitle">Les miniatures à travers les époques automobiles Bugatti</p>
         </div>
-        <div class="timeline-container">
-            <div class="timeline-track" id="timeline-track"></div>
-        </div>
+        <div class="timeline-container"><div class="timeline-track" id="timeline-track"></div></div>
     </section>
 
     <!-- Fabricants Section -->
     <section id="fabricants" class="section section-dark">
         <div class="section-header">
-            <h2 class="section-title">Les Fabricants</h2>
-            <p class="section-subtitle">392 artisans et industriels du monde entier</p>
+            <h2 class="section-title" data-content="fabricants_title">Les Fabricants</h2>
+            <p class="section-subtitle" data-content="fabricants_subtitle">Artisans et industriels du monde entier</p>
         </div>
         <div class="fabricants-search">
             <input type="text" id="fab-search" placeholder="Filtrer les fabricants...">
@@ -215,8 +191,8 @@
     <!-- Types Explorer Section -->
     <section id="types" class="section">
         <div class="section-header">
-            <h2 class="section-title">Types Bugatti</h2>
-            <p class="section-subtitle">De la Type 13 à la Chiron — toute la lignée en miniature</p>
+            <h2 class="section-title" data-content="types_title">Types Bugatti</h2>
+            <p class="section-subtitle" data-content="types_subtitle">De la Type 13 à la Chiron — toute la lignée en miniature</p>
         </div>
         <div id="types-treemap" class="types-treemap"></div>
     </section>
@@ -234,20 +210,110 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-brand">
-                <span class="nav-logo">EB</span>
+                <span class="nav-logo" data-content="nav_logo">EB</span>
                 <div>
-                    <strong>Les Bugatti de Pascal</strong>
-                    <p>Base de données de miniatures Bugatti</p>
+                    <strong data-content="footer_brand">Les Bugatti de Pascal</strong>
+                    <p data-content="footer_tagline">Base de données de miniatures Bugatti</p>
                 </div>
             </div>
             <div class="footer-info">
-                <p>3 941 miniatures référencées &middot; 392 fabricants &middot; 65 types Bugatti</p>
-                <p class="footer-credit">Données compilées avec passion par Pascal &middot; Site réalisé par J-B de Fromont</p>
+                <p id="footer-stats"></p>
+                <p class="footer-credit" data-content="footer_credit">Données compilées avec passion par Pascal · Site réalisé par J-B de Fromont</p>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-    <script src="/static/js/app.js"></script>
+    <!-- ═══════════════════ ZONE ADMIN ═══════════════════ -->
+
+    <!-- Barre flottante admin -->
+    <div id="admin-bar" class="admin-bar">
+        <button id="admin-enter" class="admin-pill" title="Espace administrateur">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Admin
+        </button>
+        <div id="admin-tools" class="admin-tools hidden">
+            <span class="admin-badge">● Mode admin</span>
+            <button id="admin-add" class="admin-btn" title="Ajouter une miniature">+ Miniature</button>
+            <button id="admin-panel-open" class="admin-btn">⚙ Panneau</button>
+            <button id="admin-exit" class="admin-btn admin-btn-exit">Site public</button>
+        </div>
+    </div>
+
+    <!-- Modale de connexion -->
+    <div id="login-modal" class="admin-modal">
+        <div class="admin-modal-backdrop"></div>
+        <div class="admin-modal-box admin-modal-small">
+            <button class="admin-modal-close" data-close-login>&times;</button>
+            <h2 id="login-title">Connexion administrateur</h2>
+            <p id="login-hint" class="admin-hint"></p>
+            <form id="login-form" novalidate>
+                <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="current-password">
+                <input type="password" id="login-password2" placeholder="Confirmez le mot de passe" autocomplete="new-password" class="hidden">
+                <div id="login-error" class="admin-error"></div>
+                <button type="submit" class="admin-primary" id="login-submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Panneau admin (onglets) -->
+    <div id="admin-panel" class="admin-modal">
+        <div class="admin-modal-backdrop"></div>
+        <div class="admin-modal-box admin-modal-large">
+            <button class="admin-modal-close" data-close-panel>&times;</button>
+            <h2>Panneau d'administration</h2>
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="guide">Guide</button>
+                <button class="admin-tab" data-tab="database">Base de données</button>
+                <button class="admin-tab" data-tab="traffic">Fréquentation</button>
+                <button class="admin-tab" data-tab="settings">Réglages</button>
+            </div>
+
+            <div class="admin-tabpane active" data-pane="guide" id="pane-guide"></div>
+
+            <div class="admin-tabpane" data-pane="database">
+                <h3>Exporter la base</h3>
+                <p class="admin-hint">Télécharge toute la collection en CSV (UTF-8). Modifiez-le tranquillement dans Excel ou Numbers, puis réimportez-le ci-dessous.</p>
+                <a href="/api/admin/export.csv" class="admin-primary" download>⬇ Télécharger le CSV</a>
+                <hr>
+                <h3>Importer un CSV</h3>
+                <p class="admin-hint"><strong>Attention :</strong> l'import remplace toute la collection. Une sauvegarde de la version précédente est faite automatiquement. Les en-têtes doivent être <em>exactement</em> ceux du fichier exporté.</p>
+                <div class="csv-import-row">
+                    <label class="admin-file">
+                        <span class="admin-file-btn">Choisir un fichier</span>
+                        <span class="admin-file-name" id="csv-file-name">Aucun fichier sélectionné</span>
+                        <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+                    </label>
+                    <button id="csv-import-btn" class="admin-primary">⬆ Importer et remplacer</button>
+                </div>
+                <div id="csv-result" class="admin-result"></div>
+            </div>
+
+            <div class="admin-tabpane" data-pane="traffic">
+                <div id="traffic-content"><p class="admin-hint">Chargement…</p></div>
+            </div>
+
+            <div class="admin-tabpane" data-pane="settings">
+                <h3>Changer le mot de passe</h3>
+                <form id="pw-form">
+                    <input type="password" id="pw-current" placeholder="Mot de passe actuel" autocomplete="current-password" required>
+                    <input type="password" id="pw-new" placeholder="Nouveau mot de passe (min. 6 caractères)" autocomplete="new-password" required>
+                    <button type="submit" class="admin-primary">Mettre à jour</button>
+                    <div id="pw-result" class="admin-result"></div>
+                </form>
+                <hr>
+                <h3>Exclure des adresses IP du comptage</h3>
+                <p class="admin-hint">Une IP par ligne. Votre IP actuelle : <strong id="my-ip">…</strong> <button type="button" id="add-my-ip" class="admin-link">l'ajouter</button></p>
+                <textarea id="excluded-ips" rows="4" placeholder="127.0.0.1"></textarea>
+                <button id="save-ips" class="admin-primary">Enregistrer les exclusions</button>
+                <div id="ips-result" class="admin-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/vendor/chart.umd.min.js"></script>
+    <script src="/static/js/app.js?v={{ v }}"></script>
+    <script src="/static/js/admin.js?v={{ v }}"></script>
 </body>
 </html>
