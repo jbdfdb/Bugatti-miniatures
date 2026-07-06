@@ -26,6 +26,8 @@ bugatti reset-admin  # wipe local admin password
 
 No tests or linter are configured. There is no build step (Chart.js and the web fonts are vendored under `static/`). Owner maintenance is documented in **FICHE-MAINTENANCE.md**; the in-app admin guide lives in the "Guide" tab (rendered by `renderGuide()` in `static/js/admin.js`).
 
+**Dependencies:** Poetry is NOT required. `install.sh` and `bugatti update` install **pinned** versions from `requirements.txt` into `.venv` via pip, so dev/friend/VPS all get the identical set. `pyproject.toml` only *declares* the deps (loose ranges) as metadata; `requirements.txt` is the source of truth for exact versions (there is no `poetry.lock`). When bumping a dependency: rebuild a venv from the ranges, run the endpoint + browser smoke checks, then `pip freeze > requirements.txt`. Note: Starlette 1.x changed `TemplateResponse` to a request-first signature (`TemplateResponse(request, name, context)`) — keep that form (it also works on older Starlette).
+
 ## Architecture
 
 ### Data flow (living store, no build step)

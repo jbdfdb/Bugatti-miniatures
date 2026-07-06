@@ -150,8 +150,10 @@ def asset_version() -> str:
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     analytics.record_visit(client_ip(request), "/", is_admin(request))
+    # Signature « request en premier » : requise par Starlette 1.x et acceptée
+    # par les versions ≥ 0.29 (compatible ancien et nouveau).
     resp = templates.TemplateResponse(
-        "index.html", {"request": request, "v": asset_version()})
+        request, "index.html", {"v": asset_version()})
     # La page HTML elle-même ne doit jamais être mise en cache (elle porte les
     # numéros de version des assets).
     resp.headers["Cache-Control"] = "no-cache"

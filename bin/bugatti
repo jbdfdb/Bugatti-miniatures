@@ -84,11 +84,9 @@ cmd_status() {
 cmd_update() {
     say "Mise à jour depuis GitHub…"
     git pull origin main || die "Échec du git pull (modifications locales ? voir FICHE-MAINTENANCE.md)"
-    say "Mise à jour des dépendances…"
-    # Toujours dans le .venv du projet (pas de dépendance à Poetry).
-    "$PYTHON" -m pip install --quiet --upgrade \
-        "fastapi>=0.135,<0.136" "uvicorn>=0.42,<0.43" \
-        "jinja2>=3.1.6,<4" "python-multipart>=0.0.22,<0.0.23" || true
+    say "Mise à jour des dépendances (versions figées)…"
+    # Versions figées dans requirements.txt, installées dans le .venv du projet.
+    "$PYTHON" -m pip install --quiet -r "$REPO/requirements.txt" || true
     say "À jour ! Relancez avec :  bugatti run"
 }
 

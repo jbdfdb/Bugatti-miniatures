@@ -6,6 +6,9 @@ authors = [
     {name = "J-B de Fromont"}
 ]
 requires-python = ">=3.11"
+# Déclaration des dépendances (fourchettes). L'INSTALLATION réelle utilise les
+# versions FIGÉES de requirements.txt (via install.sh / bugatti update) pour que
+# tout le monde ait exactement le même jeu. Poetry n'est pas requis.
 dependencies = [
     "fastapi (>=0.135.1,<0.136.0)",
     "uvicorn (>=0.42.0,<0.43.0)",
