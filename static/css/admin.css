@@ -44,6 +44,8 @@
     padding: 8px 13px;
 }
 .admin-btn:hover { background: var(--bugatti-blue); }
+.admin-btn.active { background: var(--gold); color: #14142a; }
+.admin-btn.active:hover { background: var(--gold-light); }
 .admin-btn-exit { background: rgba(201, 168, 76, 0.2); color: var(--gold-light); }
 .admin-btn-exit:hover { background: var(--gold); color: #14142a; }
 .admin-btn-danger { background: rgba(196, 30, 58, 0.15); color: #ff9db0; }

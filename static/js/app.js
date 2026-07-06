@@ -20,6 +20,9 @@
         search: '', echelle: 'all', material: 'all',
         marque: 'all', type: 'all', fabricant: 'all',
     };
+    // Filtre perso admin : n'afficher que la collection de Pascal (source_info = pvm).
+    let showMineOnly = false;
+    const MY_COLLECTION = 'pvm';   // valeur de source_info identifiant la collection de Pascal
 
     const isAdmin = () => window.Admin && window.Admin.isAdmin();
 
@@ -282,6 +285,14 @@
         setCount('hero-count-types', DATA.stats.types);
         animateCounters();
 
+        // nombre de miniatures de la collection de Pascal (pour le bouton admin)
+        const mineBtn = document.getElementById('admin-mine');
+        if (mineBtn) {
+            mineBtn.dataset.count = DATA.miniatures.filter(
+                m => (m.source_info || '').trim().toLowerCase() === MY_COLLECTION).length;
+            updateMineButton();
+        }
+
         applyContent();
         initFilters();
         renderCollection();
@@ -393,6 +404,8 @@
 
     function applyFilters() {
         filtered = DATA.miniatures.filter(m => {
+            // Filtre admin « Ma collection » : uniquement les miniatures pvm.
+            if (showMineOnly && (m.source_info || '').trim().toLowerCase() !== MY_COLLECTION) return false;
             if (activeFilters.search) {
                 const searchable = [
                     m.fabricant, m.type_bugatti, m.modele, m.couleur,
@@ -417,6 +430,23 @@
         document.getElementById('search-count').textContent =
             filtered.length < DATA.miniatures.length ? `${filtered.length.toLocaleString('fr-FR')} résultats` : '';
         renderCollection();
+    }
+
+    // ═══ FILTRE ADMIN « MA COLLECTION » (pvm) ═══
+    function updateMineButton() {
+        const btn = document.getElementById('admin-mine');
+        if (!btn) return;
+        const n = btn.dataset.count;
+        btn.classList.toggle('active', showMineOnly);
+        btn.textContent = (showMineOnly ? '✓ ' : '') + 'Ma collection'
+            + (n ? ` (${Number(n).toLocaleString('fr-FR')})` : '');
+    }
+    function toggleMine() {
+        showMineOnly = !showMineOnly;
+        updateMineButton();
+        currentPage = 1;
+        applyFilters();
+        document.getElementById('collection').scrollIntoView({ behavior: 'smooth' });
     }
 
     // ═══ COLLECTION RENDERING ═══
@@ -848,7 +878,10 @@
         /** Bascule le mode admin : affiche/masque les crayons et refait le rendu. */
         setAdminMode(on) {
             document.body.classList.toggle('admin-mode', !!on);
-            if (DATA) renderCollection();  // DATA peut ne pas être encore chargé
+            // En quittant l'admin, on annule le filtre perso pour que le public
+            // retrouve toute la collection.
+            if (!on && showMineOnly) { showMineOnly = false; updateMineButton(); }
+            if (DATA) applyFilters();  // ré-applique les filtres + rend la grille
         },
         getData() { return DATA; },
     };
@@ -858,6 +891,8 @@
         initHeroCanvas();
         initNav();
         initModal();
+        const mineBtn = document.getElementById('admin-mine');
+        if (mineBtn) mineBtn.addEventListener('click', toggleMine);
         loadData();
     });
 })();

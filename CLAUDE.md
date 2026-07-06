@@ -41,7 +41,7 @@ No tests or linter are configured. There is no build step (Chart.js and the web 
 - `app.py` — routes, security-headers middleware (strict CSP: `default-src 'self'`), the `admin_guard` dependency that enforces session + CSRF on every write, `read_json()` (rejects oversized/malformed bodies), and the `_remove_uploaded_photo`/`_save_photos` helpers (atomic writes to gitignored `static/img/photos_index.json`).
 
 ### Frontend (`static/js/`)
-- `app.js` (`window.App`) — public site: renders the collection, charts, timeline, and editorial text from `content`. It exposes `setAdminMode`, `openModal`, `openEditor`, `reload`, `toast`.
+- `app.js` (`window.App`) — public site: renders the collection, charts, timeline, and editorial text from `content`. It exposes `setAdminMode`, `openModal`, `openEditor`, `reload`, `toast`. The admin-only "Ma collection" toggle filters to Pascal's own miniatures (`source_info === MY_COLLECTION` where `MY_COLLECTION = 'pvm'`); it is client-side and admin-session-only (it resets on exit, never affects public visitors). `source_info` is the collection/source field (values: `pvm`, `anicet`, scraping sources…).
 - `admin.js` (`window.Admin`) — session/login, the tabbed admin panel (Guide / Base de données / Fréquentation / Réglages), and all write calls (adds the `X-CSRF-Token` header). `app.js` calls into `window.Admin` for saves; `admin.js` calls back into `window.App` for re-render. Inline editing is a shared centered popover (`openEditor`), triggered by pencils that CSS shows only when `<body>` has `admin-mode`.
 
 ## Auth & security model (important)
