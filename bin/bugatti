@@ -85,17 +85,10 @@ cmd_update() {
     say "Mise à jour depuis GitHub…"
     git pull origin main || die "Échec du git pull (modifications locales ? voir FICHE-MAINTENANCE.md)"
     say "Mise à jour des dépendances…"
-    if command -v poetry >/dev/null 2>&1; then
-        poetry install --no-root --quiet || poetry install --quiet || true
-    else
-        "$PYTHON" -m pip install --quiet --upgrade -r <("$PYTHON" - <<'PY'
-import tomllib, sys
-d = tomllib.load(open("pyproject.toml","rb"))
-for dep in d["project"]["dependencies"]:
-    print(dep.split(" ")[0].split(">")[0].split("<")[0].split("=")[0].strip())
-PY
-) || true
-    fi
+    # Toujours dans le .venv du projet (pas de dépendance à Poetry).
+    "$PYTHON" -m pip install --quiet --upgrade \
+        "fastapi>=0.135,<0.136" "uvicorn>=0.42,<0.43" \
+        "jinja2>=3.1.6,<4" "python-multipart>=0.0.22,<0.0.23" || true
     say "À jour ! Relancez avec :  bugatti run"
 }
 

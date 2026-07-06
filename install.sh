@@ -33,16 +33,13 @@ if [ ! -d .venv ]; then
 fi
 VENV_PY="$REPO/.venv/bin/python"
 
-# 3) Dépendances
+# 3) Dépendances — toujours installées DANS le .venv (pas besoin de Poetry ;
+#    on n'utilise pas `poetry install` qui viserait un autre environnement).
 say "Installation des dépendances…"
-if command -v poetry >/dev/null 2>&1; then
-    poetry install --no-root || poetry install
-else
-    "$VENV_PY" -m pip install --quiet --upgrade pip
-    "$VENV_PY" -m pip install --quiet \
-        "fastapi>=0.135,<0.136" "uvicorn>=0.42,<0.43" \
-        "jinja2>=3.1.6,<4" "python-multipart>=0.0.22,<0.0.23"
-fi
+"$VENV_PY" -m pip install --quiet --upgrade pip
+"$VENV_PY" -m pip install --quiet \
+    "fastapi>=0.135,<0.136" "uvicorn>=0.42,<0.43" \
+    "jinja2>=3.1.6,<4" "python-multipart>=0.0.22,<0.0.23"
 
 # 4) Rendre le lanceur exécutable
 chmod +x "$REPO/bin/bugatti"
