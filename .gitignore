@@ -1,3 +1,6 @@
+# Config locale de l'outil Claude Code (pas du code du site)
+.claude/
+
 # Python
 __pycache__/
 *.pyc
